@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>YumiStudio</RootNamespace>
+    <UserSecretsId>8876a79c-acda-4547-9b39-265eab2ec5a7</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="4.0.7.12" />
+    <PackageReference Include="AWSSDK.SSO" Version="4.0.1.9" />
+    <PackageReference Include="AWSSDK.SSOOIDC" Version="4.0.2.6" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="MySql.Data" Version="9.4.0" />
+    <PackageReference Include="NSwag.AspNetCore" Version="14.5.0" />
+    <PackageReference Include="NUnit" Version="4.4.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="YumiDotNet.API\Extensions\" />
+    <Folder Include="YumiDotNet.API\Filters\" />
+    <Folder Include="YumiDotNet.Application\Features\User\" />
+    <Folder Include="YumiDotNet.Application\Validators\" />
+    <Folder Include="YumiDotNet.Build\" />
+    <Folder Include="YumiDotNet.Common\Extensions\" />
+    <Folder Include="YumiDotNet.Common\Logging\" />
+    <Folder Include="YumiDotNet.Domain\ValueObjects\" />
+    <Folder Include="YumiDotNet.Infrastructure\ExternalServices\" />
+    <Folder Include="YumiDotNet.Infrastructure\Identity\" />
+    <Folder Include="YumiDotNet.Infrastructure\Persistence\Migrations\" />
+    <Folder Include="YumiDotNet.Tests\IntegrationTests\" />
+    <Folder Include="YumiDotNet.Tests\UnitTests\Repositories\" />
+    <Folder Include="YumiDotNet.Tests\UnitTests\Services\" />
+  </ItemGroup>
+
+</Project>
