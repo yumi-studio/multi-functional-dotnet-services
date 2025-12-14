@@ -20,6 +20,7 @@ using DomainInterfacesFakebook = YumiStudio.YumiDotNet.Domain.Interfaces.Fakeboo
 using YumiStudio.YumiDotNet.Infrastructure.Repositories;
 using InfrastructureRepositoriesFakebook = YumiStudio.YumiDotNet.Infrastructure.Repositories.Fakebook;
 using Microsoft.AspNetCore.Authorization;
+using YumiStudio.YumiDotNet.Common.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,14 @@ builder.Services
 
         ValidateLifetime = true,
         ClockSkew = TimeSpan.FromSeconds(30)
+      };
+      jwtOptions.Events = new JwtBearerEvents
+      {
+        OnMessageReceived = context =>
+        {
+          context.Token = context.Request.Cookies[CookieKeys.JWT_TOKEN];
+          return Task.CompletedTask;
+        }
       };
     });
 builder.Services.AddAuthorizationBuilder().AddFallbackPolicy(

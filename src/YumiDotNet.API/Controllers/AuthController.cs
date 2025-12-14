@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -23,8 +22,7 @@ namespace YumiStudio.YumiDotNet.API.Controllers;
 public class AuthController(
   ILogger<AuthController> _logger,
   IOptions<JwtConfiguration> _jwtConfig,
-  IHttpContextAccessor _httpContextAccessor,
-  ActiveTokenManager _tokenManager,
+  CookiesManager _cookiesManager,
   IUserService _userService,
   ITokenRepository _tokenRepository
 ) : GenericController
@@ -90,6 +88,7 @@ public class AuthController(
     }
 
     string token = await GenerateJwtToken(user);
+    _cookiesManager.SetCookie(CookieKeys.JWT_TOKEN, token, DateTimeOffset.UtcNow.AddDays(1));
 
     return OkResponse(new LoginResponse { Token = token });
   }
