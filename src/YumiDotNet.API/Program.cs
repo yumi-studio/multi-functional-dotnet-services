@@ -21,12 +21,19 @@ using YumiStudio.YumiDotNet.Infrastructure.Repositories;
 using InfrastructureRepositoriesFakebook = YumiStudio.YumiDotNet.Infrastructure.Repositories.Fakebook;
 using Microsoft.AspNetCore.Authorization;
 using YumiStudio.YumiDotNet.Common.Constants;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure strongly typed settings objects
 builder.Services.Configure<StorageConfig>(builder.Configuration.GetSection("Storage"));
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<GoogleAuthConfiguration>(builder.Configuration.GetSection("Authentication:Google"));
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+  options.MinimumSameSitePolicy = SameSiteMode.None;
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services
@@ -34,6 +41,12 @@ builder.Services
     {
       options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
       options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+      options.Cookie.SameSite = SameSiteMode.None;
+      options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     })
     .AddJwtBearer(jwtOptions =>
     {
@@ -62,6 +75,14 @@ builder.Services
           return Task.CompletedTask;
         }
       };
+    })
+    .AddGoogle(options =>
+    {
+      var jwtConfig = builder.Configuration.GetSection("Authentication:Google").Get<GoogleAuthConfiguration>()!;
+      options.ClientId = jwtConfig.ClientId;
+      options.ClientSecret = jwtConfig.ClientSecret;
+      options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+      options.SaveTokens = true;
     });
 builder.Services.AddAuthorizationBuilder().AddFallbackPolicy(
   name: "custom-fallback-policy",
@@ -123,6 +144,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add services to the container.
+builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -260,6 +282,7 @@ else
 }
 
 app.UseMiddleware<RequestErrorMiddleware>();
+app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<CheckTokenBlacklistMiddleware>();
@@ -268,4 +291,5 @@ app.UseMiddleware<AuthorizeMiddleware>();
 // app.UseHttpsRedirection();
 
 app.MapControllers();
+app.MapDefaultControllerRoute();
 app.Run();

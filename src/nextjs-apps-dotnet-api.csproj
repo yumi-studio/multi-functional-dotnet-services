@@ -14,6 +14,8 @@
     <PackageReference Include="AWSSDK.SSOOIDC" Version="4.0.2.6" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
@@ -46,6 +48,7 @@
     <Folder Include="YumiDotNet.Build\" />
     <Folder Include="YumiDotNet.Common\Extensions\" />
     <Folder Include="YumiDotNet.Common\Logging\" />
+    <Folder Include="YumiDotNet.Controllers\" />
     <Folder Include="YumiDotNet.Domain\ValueObjects\" />
     <Folder Include="YumiDotNet.Infrastructure\ExternalServices\" />
     <Folder Include="YumiDotNet.Infrastructure\Identity\" />
@@ -53,6 +56,8 @@
     <Folder Include="YumiDotNet.Tests\IntegrationTests\" />
     <Folder Include="YumiDotNet.Tests\UnitTests\Repositories\" />
     <Folder Include="YumiDotNet.Tests\UnitTests\Services\" />
+    <Folder Include="YumiDotnet.Web\" />
+    <Folder Include="YumiDotnet.Web\Controllers\" />
   </ItemGroup>
 
 </Project>
