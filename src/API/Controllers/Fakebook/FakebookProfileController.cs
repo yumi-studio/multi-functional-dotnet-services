@@ -69,7 +69,7 @@ public class FakebookProfileController(
     }
 
     _cookiesManager.SetFakebookActiveProfile(profile.ProfileId);
-    return OkResponse<object?>(null);
+    return OkResponse();
   }
 
   [HttpPost(Name = "CreateProfile")]

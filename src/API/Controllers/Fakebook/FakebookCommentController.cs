@@ -62,7 +62,7 @@ public class FakebookCommentController(
     }
     _dbContext.FakebookPostComments.Remove(comment);
     await _dbContext.SaveChangesAsync();
-    return OkResponse<object?>(null);
+    return OkResponse();
   }
 
   [HttpPost("{id}/react", Name = "ReactComment")]

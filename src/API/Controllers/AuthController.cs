@@ -78,18 +78,7 @@ public class AuthController(
   [AllowAnonymous]
   public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
   {
-    UserDto? user = null;
-    if (loginRequest.LoginType == LoginType.Username
-      || loginRequest.LoginType == LoginType.Email
-      || loginRequest.LoginType == LoginType.PhoneNumber)
-    {
-      user = await _userService.AuthenticateUser(loginRequest);
-    }
-
-    if (user == null)
-    {
-      return ErrorResponse(["Account not found or invalid credentials"]);
-    }
+    var user = await _userService.AuthenticateUser(loginRequest);
 
     string token = await GenerateJwtToken(user);
     _cookiesManager.SetCookie(CookieKeys.JWT_TOKEN, token, DateTimeOffset.UtcNow.AddDays(1));
@@ -101,7 +90,6 @@ public class AuthController(
   [Authorize]
   public async Task<IActionResult> Logout()
   {
-    var userId = Guid.Parse(HttpContext.User.Identity?.Name!);
     var jwtId = HttpContext.User.FindFirst(CustomClaims.JwtId)?.Value ?? throw new Exception("Token is not valid");
 
     if (jwtId != null)
@@ -110,22 +98,12 @@ public class AuthController(
       _tokenRepository.Delete(token);
       await _tokenRepository.SaveChangesAsync();
     }
+    else
+    {
+      throw new Exception("Token is not valid");
+    }
 
-    return OkResponse(new { Message = "Logged out successfully" });
-  }
-
-  [HttpGet("login-types", Name = "UserAllLoginType")]
-  public IActionResult AllLoginType()
-  {
-    return OkResponse<List<object>>([
-      new { Type = LoginType.Username, Label = LoginType.Username.ToString() },
-      new { Type = LoginType.Email, Label = LoginType.Email.ToString() },
-      new { Type = LoginType.PhoneNumber, Label = LoginType.PhoneNumber.ToString() },
-      new { Type = LoginType.Google, Label = LoginType.Google.ToString() },
-      new { Type = LoginType.Facebook, Label = LoginType.Facebook.ToString() },
-      new { Type = LoginType.Twitter, Label = LoginType.Twitter.ToString() },
-      new { Type = LoginType.Microsoft, Label = LoginType.Microsoft.ToString() },
-    ]);
+    return OkResponse();
   }
 
   [AllowAnonymous]

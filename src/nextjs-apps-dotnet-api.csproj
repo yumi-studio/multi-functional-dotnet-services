@@ -56,7 +56,6 @@
     <Folder Include="Tests\IntegrationTests\" />
     <Folder Include="Tests\UnitTests\Repositories\" />
     <Folder Include="Tests\UnitTests\Services\" />
-    <Folder Include="Web\" />
   </ItemGroup>
 
 </Project>

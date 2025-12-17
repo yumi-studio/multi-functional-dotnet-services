@@ -122,10 +122,6 @@ public class UserService(
 
   public async Task<UserDto> AuthenticateUser(LoginRequest userLoginDto)
   {
-    if (userLoginDto.Email == null && userLoginDto.Username == null)
-    {
-      throw new Exception("Email or Username required");
-    }
     User? existUser = await _userRepository.GetDbSet().Where(u => u.Username == userLoginDto.Username).FirstOrDefaultAsync();
 
     return existUser == null ? throw new Exception("Account not exist.") : GetUserDtoFromUser(existUser);

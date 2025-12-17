@@ -5,6 +5,11 @@ namespace YumiStudio.API.Controllers;
 
 public abstract class GenericController : ControllerBase
 {
+  protected IActionResult OkResponse()
+  {
+    return OkResponse<object?>(null);
+  }
+
   protected IActionResult OkResponse<T>(T data)
   {
     return Ok(new ResponseDto<T>
