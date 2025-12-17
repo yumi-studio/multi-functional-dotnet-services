@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using YumiStudio.YumiDotNet.Infrastructure.Persistence.DbContexts;
+using YumiStudio.Infrastructure.Persistence.DbContexts;
 
 #nullable disable
 
@@ -22,7 +22,7 @@ namespace YumiStudio.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Post", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +63,7 @@ namespace YumiStudio.Migrations
                     b.ToTable("fakebook_posts");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.PostComment", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.PostComment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +106,7 @@ namespace YumiStudio.Migrations
                     b.ToTable("fakebook_post_comments");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.PostMedia", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.PostMedia", b =>
                 {
                     b.Property<Guid>("PostMediaId")
                         .ValueGeneratedOnAdd()
@@ -132,7 +132,7 @@ namespace YumiStudio.Migrations
                     b.ToTable("fakebook_post_media");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Profile", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.Profile", b =>
                 {
                     b.Property<Guid>("ProfileId")
                         .ValueGeneratedOnAdd()
@@ -161,7 +161,7 @@ namespace YumiStudio.Migrations
                     b.ToTable("fakebook_profiles");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Reaction", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.Reaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -201,7 +201,7 @@ namespace YumiStudio.Migrations
                     b.ToTable("fakebook_reactions");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.FileUpload", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.FileUpload", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -262,7 +262,7 @@ namespace YumiStudio.Migrations
                     b.ToTable("file_uploads");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Token", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Token", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -284,7 +284,7 @@ namespace YumiStudio.Migrations
                     b.ToTable("tokens");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.User", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -385,9 +385,9 @@ namespace YumiStudio.Migrations
                         });
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Post", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.Post", b =>
                 {
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Profile", "Profile")
+                    b.HasOne("YumiStudio.Domain.Entities.Fakebook.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,15 +396,15 @@ namespace YumiStudio.Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.PostComment", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.PostComment", b =>
                 {
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Profile", "Profile")
+                    b.HasOne("YumiStudio.Domain.Entities.Fakebook.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Post", "Post")
+                    b.HasOne("YumiStudio.Domain.Entities.Fakebook.Post", "Post")
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -415,15 +415,15 @@ namespace YumiStudio.Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.PostMedia", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.PostMedia", b =>
                 {
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.FileUpload", "FileUpload")
+                    b.HasOne("YumiStudio.Domain.Entities.FileUpload", "FileUpload")
                         .WithOne("MediaItem")
-                        .HasForeignKey("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.PostMedia", "FileId")
+                        .HasForeignKey("YumiStudio.Domain.Entities.Fakebook.PostMedia", "FileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Post", "Post")
+                    b.HasOne("YumiStudio.Domain.Entities.Fakebook.Post", "Post")
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -434,9 +434,9 @@ namespace YumiStudio.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Profile", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.Profile", b =>
                 {
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.User", "User")
+                    b.HasOne("YumiStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -445,9 +445,9 @@ namespace YumiStudio.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Reaction", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Fakebook.Reaction", b =>
                 {
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.Fakebook.Profile", "Profile")
+                    b.HasOne("YumiStudio.Domain.Entities.Fakebook.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ReactedBy")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -456,9 +456,9 @@ namespace YumiStudio.Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.FileUpload", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.FileUpload", b =>
                 {
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.User", "Uploader")
+                    b.HasOne("YumiStudio.Domain.Entities.User", "Uploader")
                         .WithMany()
                         .HasForeignKey("UploadedBy")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -467,9 +467,9 @@ namespace YumiStudio.Migrations
                     b.Navigation("Uploader");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.Token", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.Token", b =>
                 {
-                    b.HasOne("YumiStudio.YumiDotNet.Domain.Entities.User", "User")
+                    b.HasOne("YumiStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -478,7 +478,7 @@ namespace YumiStudio.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YumiStudio.YumiDotNet.Domain.Entities.FileUpload", b =>
+            modelBuilder.Entity("YumiStudio.Domain.Entities.FileUpload", b =>
                 {
                     b.Navigation("MediaItem");
                 });

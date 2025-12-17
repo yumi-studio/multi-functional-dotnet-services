@@ -41,23 +41,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="YumiDotNet.API\Extensions\" />
-    <Folder Include="YumiDotNet.API\Filters\" />
-    <Folder Include="YumiDotNet.Application\Features\User\" />
-    <Folder Include="YumiDotNet.Application\Validators\" />
-    <Folder Include="YumiDotNet.Build\" />
-    <Folder Include="YumiDotNet.Common\Extensions\" />
-    <Folder Include="YumiDotNet.Common\Logging\" />
-    <Folder Include="YumiDotNet.Controllers\" />
-    <Folder Include="YumiDotNet.Domain\ValueObjects\" />
-    <Folder Include="YumiDotNet.Infrastructure\ExternalServices\" />
-    <Folder Include="YumiDotNet.Infrastructure\Identity\" />
-    <Folder Include="YumiDotNet.Infrastructure\Persistence\Migrations\" />
-    <Folder Include="YumiDotNet.Tests\IntegrationTests\" />
-    <Folder Include="YumiDotNet.Tests\UnitTests\Repositories\" />
-    <Folder Include="YumiDotNet.Tests\UnitTests\Services\" />
-    <Folder Include="YumiDotnet.Web\" />
-    <Folder Include="YumiDotnet.Web\Controllers\" />
+    <Folder Include="API\Extensions\" />
+    <Folder Include="API\Filters\" />
+    <Folder Include="Application\Features\User\" />
+    <Folder Include="Application\Validators\" />
+    <Folder Include="Build\" />
+    <Folder Include="Common\Extensions\" />
+    <Folder Include="Common\Logging\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Domain\ValueObjects\" />
+    <Folder Include="Infrastructure\ExternalServices\" />
+    <Folder Include="Infrastructure\Identity\" />
+    <Folder Include="Infrastructure\Persistence\Migrations\" />
+    <Folder Include="Tests\IntegrationTests\" />
+    <Folder Include="Tests\UnitTests\Repositories\" />
+    <Folder Include="Tests\UnitTests\Services\" />
+    <Folder Include="Web\" />
   </ItemGroup>
 
 </Project>
