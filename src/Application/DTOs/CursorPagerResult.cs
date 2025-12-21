@@ -1,0 +1,13 @@
+using System;
+
+namespace YumiStudio.Application.DTOs;
+
+public class CursorPagerResult<T, TCursor>
+{
+  public IEnumerable<T> Items { get; set; } = [];
+  public TCursor? Next { get; set; } = default;
+}
+
+public class DateTimeOffsetCursorPagerResult<T> : CursorPagerResult<T, DateTimeOffset?>
+{
+}
