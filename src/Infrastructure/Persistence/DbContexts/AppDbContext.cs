@@ -21,9 +21,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     modelBuilder.ApplyConfiguration(new FakebookConfiguration.ReactionConfiguration());
   }
 
-  #region Basic Deset
+  #region Basic Dbset
 
   public DbSet<User> Users { get; set; }
+  public DbSet<UserExternal> UserExternals { get; set; }
   public DbSet<FileUpload> FileUploads { get; set; }
 
   #endregion

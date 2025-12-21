@@ -122,7 +122,7 @@ public class UserService(
 
   public async Task<UserDto> AuthenticateUser(LoginRequest userLoginDto)
   {
-    User? existUser = await _userRepository.GetDbSet().Where(u => u.Username == userLoginDto.Username).FirstOrDefaultAsync();
+    User? existUser = await _userRepository.GetDbSet().Where(u => u.Email == userLoginDto.Email).FirstOrDefaultAsync();
 
     return existUser == null ? throw new Exception("Account not exist.") : GetUserDtoFromUser(existUser);
   }

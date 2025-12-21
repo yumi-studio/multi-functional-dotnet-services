@@ -83,6 +83,16 @@ builder.Services
       options.ClientSecret = jwtConfig.ClientSecret;
       options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
       options.SaveTokens = true;
+    })
+    .AddMicrosoftAccount(options =>
+    {
+      var microsoftConfig = builder.Configuration.GetSection("Authentication:Microsoft").Get<MicrosoftAuthConfiguration>()!;
+      options.ClientId = microsoftConfig.ClientId;
+      options.ClientSecret = microsoftConfig.ClientSecret;
+      options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+      options.AuthorizationEndpoint = microsoftConfig.AuthorizationEndpoint;
+      options.TokenEndpoint = microsoftConfig.TokenEndpoint;
+      options.SaveTokens = true;
     });
 builder.Services.AddAuthorizationBuilder().AddFallbackPolicy(
   name: "custom-fallback-policy",
@@ -207,6 +217,7 @@ builder.Services.AddScoped<ApplicationInterfacesFakebook.ICommentService, Applic
 // Register application repositories
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserExternalRepository, UserExternalRepository>();
 builder.Services.AddScoped<IFileUploadRepository, FileUploadRepository>();
 builder.Services.AddScoped<DomainInterfacesFakebook.IProfileRepository, InfrastructureRepositoriesFakebook.ProfileRepository>();
 builder.Services.AddScoped<DomainInterfacesFakebook.IPostRepository, InfrastructureRepositoriesFakebook.PostRepository>();

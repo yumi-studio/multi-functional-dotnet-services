@@ -4,25 +4,27 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Microsoft.Extensions.Options;
+using YumiStudio.Common.Configurations;
 
 namespace YumiStudio.Common.Helpers;
 
 public class AwsS3Helper
 {
-  private readonly IConfigurationSection _s3Config;
+  private readonly StorageConfig _storageConfig;
   private readonly IAmazonS3 _s3Client;
   private readonly ILogger<AwsS3Helper> _logger;
 
   public AwsS3Helper(
-    IConfiguration config,
+    IOptions<StorageConfig> storageConfig,
     ILogger<AwsS3Helper> logger
   )
   {
     _logger = logger;
-    _s3Config = config.GetSection("Aws:S3");
+    _storageConfig = storageConfig.Value;
     _s3Client = new AmazonS3Client(
-        new BasicAWSCredentials(_s3Config["AccessKey"], _s3Config["SecretKey"]),
-        RegionEndpoint.GetBySystemName(_s3Config["Region"])
+      new BasicAWSCredentials(_storageConfig.AwsS3.AccessKey, _storageConfig.AwsS3.SecretKey),
+      RegionEndpoint.GetBySystemName(_storageConfig.AwsS3.Region)
     );
   }
 
@@ -37,7 +39,7 @@ public class AwsS3Helper
       var s3Key = filePath ?? file.FileName;
 
       using var stream = file.OpenReadStream();
-      await fileTransferUtility.UploadAsync(stream, _s3Config["BucketName"], s3Key);
+      await fileTransferUtility.UploadAsync(stream, _storageConfig.AwsS3.BucketName, s3Key);
 
       return s3Key;
     }
@@ -52,7 +54,7 @@ public class AwsS3Helper
   {
     return await _s3Client.GetPreSignedURLAsync(new GetPreSignedUrlRequest()
     {
-      BucketName = _s3Config["BucketName"],
+      BucketName = _storageConfig.AwsS3.BucketName,
       Key = filePath,
       Expires = DateTime.UtcNow.AddHours(1)
     });

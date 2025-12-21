@@ -4,9 +4,12 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using YumiStudio.Application.DTOs;
 using YumiStudio.Application.Features.Auth.Login;
@@ -15,6 +18,7 @@ using YumiStudio.Application.Interfaces;
 using YumiStudio.Common.Configurations;
 using YumiStudio.Common.Constants;
 using YumiStudio.Common.Helpers;
+using YumiStudio.Domain.Entities;
 using YumiStudio.Domain.Enums;
 using YumiStudio.Domain.Interfaces;
 
@@ -28,7 +32,8 @@ public class AuthController(
   CookiesManager _cookiesManager,
   IUserService _userService,
   ITokenRepository _tokenRepository,
-  IUserRepository _userRepository
+  IUserRepository _userRepository,
+  IUserExternalRepository _userExternalRepository
 ) : GenericController
 {
 
@@ -107,21 +112,56 @@ public class AuthController(
   }
 
   [AllowAnonymous]
-  [HttpGet("login-google", Name = "LoginGoogle")]
-  public IActionResult LoginGoogle([FromQuery] string? redirect)
+  [HttpGet("external-providers", Name = "GetExternalProviders")]
+  public IActionResult GetExternalProviders()
   {
-    var properties = new AuthenticationProperties
+    var providers = new Dictionary<int, string>
     {
-      RedirectUri = "/api/v1/auth/google-response?redirect=" + redirect
+      { ExternalProviders.Provider.Google.GetHashCode(), ExternalProviders.Provider.Google.ToString() },
+      { ExternalProviders.Provider.Microsoft.GetHashCode(), ExternalProviders.Provider.Microsoft.ToString() },
+      { ExternalProviders.Provider.Facebook.GetHashCode(), ExternalProviders.Provider.Facebook.ToString() },
+      { ExternalProviders.Provider.Twitter.GetHashCode(), ExternalProviders.Provider.Twitter.ToString() },
+      { ExternalProviders.Provider.GitHub.GetHashCode(), ExternalProviders.Provider.GitHub.ToString() },
+      { ExternalProviders.Provider.LinkedIn.GetHashCode(), ExternalProviders.Provider.LinkedIn.ToString() },
     };
-    return Challenge(properties, "Google");
+
+    return OkResponse(providers);
   }
 
   [AllowAnonymous]
-  [HttpGet("google-response", Name = "GoogleResponse")]
-  public async Task<IActionResult> GoogleResponse([FromQuery] string? redirect)
+  [HttpGet("login-external/{provider}", Name = "LoginExternal")]
+  public IActionResult LoginExternal(ExternalProviders.Provider provider, [FromQuery] string? redirect)
   {
-    var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+    var properties = new AuthenticationProperties
+    {
+      RedirectUri = $"/api/v1/auth/external-login-callback/{provider.GetHashCode()}?redirect={redirect}"
+    };
+    if (provider == ExternalProviders.Provider.Google)
+      return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    else if (provider == ExternalProviders.Provider.Microsoft)
+      return Challenge(properties, MicrosoftAccountDefaults.AuthenticationScheme);
+    else
+      throw new Exception("Unsupported external authentication provider");
+  }
+
+  [AllowAnonymous]
+  [HttpGet("external-login-callback/{provider}", Name = "ExternalLoginCallback")]
+  public async Task<IActionResult> ExternalLoginCallback(ExternalProviders.Provider provider, [FromQuery] string? redirect)
+  {
+    AuthenticateResult? result = null;
+    if (provider == ExternalProviders.Provider.Google)
+    {
+      result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+    }
+    else if (provider == ExternalProviders.Provider.Microsoft)
+    {
+      result = await HttpContext.AuthenticateAsync(MicrosoftAccountDefaults.AuthenticationScheme);
+    }
+    else
+    {
+      throw new Exception("Unsupported external authentication provider");
+    }
+
     if (!result.Succeeded)
       return Unauthorized();
 
@@ -136,8 +176,8 @@ public class AuthController(
     );
 
     var email = claimsIdentity.FindFirst(ClaimTypes.Email)?.Value;
-
     if (email == null) return Unauthorized();
+
     var user = await _userService.GetUserByEmail(email);
     if (user == null)
     {
@@ -155,6 +195,24 @@ public class AuthController(
       user = await _userService.RegisterUser(registerRequest);
     }
 
+    // Check if external auth is already linked
+    var userExternal = await _userExternalRepository.GetDbSet().Where(ue => ue.UserId == user.Id && ue.Provider == provider)
+      .FirstOrDefaultAsync();
+    if (userExternal == null)
+    {
+      // Link external auth
+      userExternal = new UserExternal
+      {
+        Id = Guid.NewGuid(),
+        UserId = user.Id,
+        Provider = provider,
+        ProviderUserId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+        LinkedAt = DateTimeOffset.UtcNow
+      };
+      await _userExternalRepository.AddAsync(userExternal);
+      await _userExternalRepository.SaveChangesAsync();
+    }
+
     string token = await GenerateJwtToken(user);
     _cookiesManager.SetCookie(CookieKeys.JWT_TOKEN, token, DateTimeOffset.UtcNow.AddDays(1));
 
@@ -162,7 +220,6 @@ public class AuthController(
     {
       return Redirect(redirect);
     }
-
     return OkResponse(new LoginResponse { Token = token });
   }
 }
