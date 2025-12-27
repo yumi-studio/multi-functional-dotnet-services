@@ -118,7 +118,7 @@ public class FileUploadService(
   {
     if (_storageConfig.Default == StorageConfig.LOCALDIR)
     {
-      return _storageConfig.LocalDir.BaseUrl + "/" + filePath;
+      return _storageConfig.LocalDir.BaseUrl.TrimEnd('/') + "/" + filePath.TrimStart('/');
     }
 
     if (_storageConfig.Default == StorageConfig.AWSS3)

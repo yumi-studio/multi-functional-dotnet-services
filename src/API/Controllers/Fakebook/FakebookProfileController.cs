@@ -4,22 +4,29 @@ using Microsoft.AspNetCore.Mvc;
 using YumiStudio.Application.DTOs.Fakebook;
 using YumiStudio.Application.Features.Fakebook;
 using YumiStudio.Application.Interfaces.Fakebook;
+using YumiStudio.Application.Services;
 using YumiStudio.Common.Helpers;
 
 namespace YumiStudio.API.Controllers.Fakebook;
 
 [ApiController]
 [Route("api/v1/fakebook/profiles", Name = "FakebookProfile")]
+[Authorize]
 public class FakebookProfileController(
+  CookiesManager _cookieManager,
   IProfileService _profileService,
-  CookiesManager _cookiesManager,
   FakebookHelper _fakebookHelper
-) : GenericController
+) : FakebookController(
+  _cookieManager,
+  _profileService
+)
 {
+  private readonly CookiesManager _cookieManager = _cookieManager;
+  private readonly IProfileService _profileService = _profileService;
+
   #region Profile
 
   [HttpGet(Name = "ListProfiles")]
-  [Authorize]
   public async Task<IActionResult> ListProfiles()
   {
     var authUserId = GetAuthenticatedUserId();
@@ -38,12 +45,10 @@ public class FakebookProfileController(
   }
 
   [HttpGet("me", Name = "Current Profile")]
-  [Authorize]
   public async Task<IActionResult> Me()
   {
     var authUserId = GetAuthenticatedUserId();
-    var activeProfileId = _cookiesManager.GetFakebookActiveProfile() ?? throw new Exception("No active profile");
-    var profile = await _profileService.GetProfileById(activeProfileId) ?? throw new Exception("Active profile is not exist");
+    var profile = await GetActiveProfile() ?? throw new Exception("No active profile");
     if (profile.UserId != authUserId)
     {
       throw new Exception("User doesn't own this profile");
@@ -58,7 +63,6 @@ public class FakebookProfileController(
   }
 
   [HttpGet("switch/{id}", Name = "SwitchProfile")]
-  [Authorize]
   public async Task<IActionResult> SwitchProfile(Guid id)
   {
     var authUserId = GetAuthenticatedUserId();
@@ -68,12 +72,11 @@ public class FakebookProfileController(
       throw new Exception("User doesn't own this profile");
     }
 
-    _cookiesManager.SetFakebookActiveProfile(profile.ProfileId);
+    _cookieManager.SetFakebookActiveProfile(profile.ProfileId);
     return OkResponse();
   }
 
   [HttpPost(Name = "CreateProfile")]
-  [Authorize]
   public async Task<IActionResult> CreateProfile([FromBody] ProfileRequest.Create request)
   {
     Guid userId = GetAuthenticatedUserId();

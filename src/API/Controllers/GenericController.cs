@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using YumiStudio.Application.DTOs;
+using YumiStudio.Domain.Entities;
 
 namespace YumiStudio.API.Controllers;
 

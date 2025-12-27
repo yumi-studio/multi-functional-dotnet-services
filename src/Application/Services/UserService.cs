@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using YumiStudio.Application.DTOs;
 using YumiStudio.Application.Features.Auth.Login;
@@ -9,11 +10,13 @@ using YumiStudio.Domain.Interfaces;
 namespace YumiStudio.Application.Services;
 
 public class UserService(
+  IFileUploadService _fileUploadService,
   IUserRepository _userRepository
 ) : IUserService
 {
-  private static UserDto GetUserDtoFromUser(User user)
+  private async Task<UserDto> GetUserDtoFromUser(User user)
   {
+    var avatar = await _fileUploadService.GetFileUrl(user.Avatar ?? "default/avatar.jpg");
     return new UserDto
     {
       Id = user.Id,
@@ -24,7 +27,7 @@ public class UserService(
       Gender = user.Gender,
       BirthDate = user.BirthDate,
       Bio = user.Bio,
-      Avatar = user.Avatar,
+      Avatar = avatar,
       JoinedAt = user.JoinedAt
     };
   }
@@ -52,7 +55,7 @@ public class UserService(
     var userEntities = await _userRepository.GetAllAsync();
     foreach (User userEntity in userEntities)
     {
-      users.Add(GetUserDtoFromUser(userEntity));
+      users.Add(await GetUserDtoFromUser(userEntity));
     }
     return users;
   }
@@ -60,7 +63,7 @@ public class UserService(
   public async Task<UserDto?> GetUserById(Guid id)
   {
     User? userEntity = await _userRepository.GetByIdAsync(id);
-    return userEntity != null ? GetUserDtoFromUser(userEntity) : null;
+    return userEntity != null ? await GetUserDtoFromUser(userEntity) : null;
   }
 
   public async Task<UserDto?> GetUserByEmail(string email)
@@ -68,14 +71,14 @@ public class UserService(
     User? userEntity = await _userRepository.GetDbSet()
       .Where(u => u.Email == email)
       .FirstOrDefaultAsync();
-    return userEntity != null ? GetUserDtoFromUser(userEntity) : null;
+    return userEntity != null ? await GetUserDtoFromUser(userEntity) : null;
   }
 
   public async Task<UserDto> CreateUser(UserDto user)
   {
     User userEntity = GetUserByUserDto(user);
     await _userRepository.AddAsync(userEntity);
-    return GetUserDtoFromUser(userEntity);
+    return await GetUserDtoFromUser(userEntity);
   }
 
   public async Task<UserDto> UpdateUser(UserDto user)
@@ -83,7 +86,7 @@ public class UserService(
     User userEntity = GetUserByUserDto(user);
     _userRepository.Update(userEntity);
     await _userRepository.SaveChangesAsync();
-    return GetUserDtoFromUser(userEntity);
+    return await GetUserDtoFromUser(userEntity);
   }
 
   public async Task DeleteUser(UserDto user)
@@ -117,13 +120,13 @@ public class UserService(
 
     await _userRepository.AddAsync(user);
     await _userRepository.SaveChangesAsync();
-    return GetUserDtoFromUser(user);
+    return await GetUserDtoFromUser(user);
   }
 
   public async Task<UserDto> AuthenticateUser(LoginRequest userLoginDto)
   {
     User? existUser = await _userRepository.GetDbSet().Where(u => u.Email == userLoginDto.Email).FirstOrDefaultAsync();
 
-    return existUser == null ? throw new Exception("Account not exist.") : GetUserDtoFromUser(existUser);
+    return existUser == null ? throw new Exception("Account not exist.") : await GetUserDtoFromUser(existUser);
   }
 }

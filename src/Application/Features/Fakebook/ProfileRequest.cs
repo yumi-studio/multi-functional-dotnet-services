@@ -6,4 +6,9 @@ public record class ProfileRequest
   {
     public string? Name { get; init; }
   }
+
+  public record class UpdateAvatar
+  {
+    public IFormFile? File { get; init; }
+  }
 }
