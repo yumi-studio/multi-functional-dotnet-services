@@ -10,7 +10,7 @@ using YumiStudio.Domain.Interfaces.Fakebook;
 namespace YumiStudio.Application.Services.Fakebook;
 
 public class CommentService(
-  IProfileRepository _profileRepository,
+  // IProfileRepository _profileRepository,
   IPostCommentRepository _postCommentRepository,
   IReactionRepository _reactionRepository,
   FakebookHelper _fakebookHelper

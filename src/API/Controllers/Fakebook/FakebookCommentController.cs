@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
+using System;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using YumiStudio.Application.DTOs.Fakebook;
@@ -18,14 +17,14 @@ namespace YumiStudio.API.Controllers.Fakebook;
 [Route("api/v1/fakebook/comments", Name = "FakebookComment")]
 [Authorize]
 public class FakebookCommentController(
-  ILogger<FakebookCommentController> _logger,
+  // ILogger<FakebookCommentController> _logger,
   CookiesManager _cookieManager,
   AppDbContext _dbContext,
   IProfileService _profileService,
   ICommentService _commentService,
-  IPostRepository _postRepository,
+  // IPostRepository _postRepository,
   IPostCommentRepository _postCommentRepository,
-  IReactionRepository _reactionRepository,
+  // IReactionRepository _reactionRepository,
   FakebookHelper _fakebookHelper
 ) : FakebookController(_cookieManager, _profileService)
 {

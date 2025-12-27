@@ -16,6 +16,7 @@ public class CheckTokenBlacklistMiddleware(
 
   public async Task Invoke(HttpContext context)
   {
+    _logger.LogInformation($"CheckTokenBlacklistMiddleware: Start");
     var tokenRepo = context.RequestServices.GetRequiredService<ITokenRepository>();
     var endpoint = context.GetEndpoint();
     var requiresAuth = endpoint?.Metadata.GetMetadata<AuthorizeAttribute>() != null;
@@ -28,10 +29,12 @@ public class CheckTokenBlacklistMiddleware(
         var token = await tokenRepo.GetByIdAsync(Guid.Parse(jwtId)) ?? throw new UnauthorizedException();
         if (token.ExpiredAt <= DateTimeOffset.UtcNow)
         {
+          _logger.LogInformation($"CheckTokenBlacklistMiddleware: Token is expired");
           throw new UnauthorizedException();
         }
       }
     }
+    _logger.LogInformation($"CheckTokenBlacklistMiddleware: End");
 
     await _next(context);
   }

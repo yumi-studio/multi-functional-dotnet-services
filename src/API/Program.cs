@@ -22,7 +22,6 @@ using InfrastructureRepositoriesFakebook = YumiStudio.Infrastructure.Repositorie
 using Microsoft.AspNetCore.Authorization;
 using YumiStudio.Common.Constants;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -299,8 +298,7 @@ app.UseAuthorization();
 app.UseMiddleware<CheckTokenBlacklistMiddleware>();
 app.UseMiddleware<AuthorizeMiddleware>();
 
-// app.UseHttpsRedirection();
-
+app.UseHttpsRedirection();
 app.MapControllers();
 app.MapDefaultControllerRoute();
 app.Run();

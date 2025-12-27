@@ -28,8 +28,8 @@ public class FakebookPostController(
   IProfileService _profileService,
   ICommentService _commentService,
   IPostRepository _postRepository,
-  IPostMediaRepository _postMediaRepository,
-  IPostCommentRepository _postCommentRepository,
+  // IPostMediaRepository _postMediaRepository,
+  // IPostCommentRepository _postCommentRepository,
   IFileUploadRepository _fileUploadRepository,
   IReactionRepository _reactionRepository
 ) : FakebookController(_cookieManager, _profileService)
@@ -181,11 +181,11 @@ public class FakebookPostController(
     return OkResponse(new { Id = id });
   }
 
-  [HttpPost("{id}/share", Name = "SharePost")]
-  public async Task<IActionResult> SharePost(Guid id, [FromBody] PostRequest.SharePost request)
-  {
-    throw new NotImplementedException();
-  }
+  // [HttpPost("{id}/share", Name = "SharePost")]
+  // public async Task<IActionResult> SharePost(Guid id, [FromBody] PostRequest.SharePost request)
+  // {
+  //   throw new NotImplementedException();
+  // }
 
   [HttpGet("{id}/statistic", Name = "PostStatistic")]
   public async Task<IActionResult> Statistic(Guid id)

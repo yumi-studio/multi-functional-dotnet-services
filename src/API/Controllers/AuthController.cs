@@ -1,3 +1,4 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using YumiStudio.Application.DTOs;
 using YumiStudio.Application.Features.Auth.Login;
@@ -27,12 +27,12 @@ namespace YumiStudio.API.Controllers;
 [ApiController]
 [Route("api/v1/auth", Name = "Authentication")]
 public class AuthController(
-  ILogger<AuthController> _logger,
+  // ILogger<AuthController> _logger,
   IOptions<JwtConfiguration> _jwtConfig,
   CookiesManager _cookiesManager,
   IUserService _userService,
   ITokenRepository _tokenRepository,
-  IUserRepository _userRepository,
+  // IUserRepository _userRepository,
   IUserExternalRepository _userExternalRepository
 ) : GenericController
 {

@@ -18,7 +18,7 @@ public class Profile
 
   [Column("name")]
   [Required]
-  public string Name { get; set; }
+  public required string Name { get; set; }
 
   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
   public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
