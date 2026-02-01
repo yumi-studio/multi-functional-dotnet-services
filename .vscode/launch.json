@@ -1,0 +1,28 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C#: UserCenter [https]",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}\\src\\UserCenter\\UserCenter.csproj",
+      "launchConfigurationId": "TargetFramework=;https"
+    },
+    {
+      "name": "C#: Fakebook [https]",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}\\src\\Fakebook\\Fakebook.csproj",
+      "launchConfigurationId": "TargetFramework=;https"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run all services",
+      "configurations": ["C#: UserCenter [https]", "C#: Fakebook [https]"]
+    }
+  ]
+}
