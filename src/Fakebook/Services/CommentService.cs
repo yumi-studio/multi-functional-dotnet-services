@@ -11,10 +11,13 @@ namespace Fakebook.Services;
 
 public class CommentService(
   // IProfileRepository _profileRepository,
+  IFileUploadService fileUploadService,
   IPostCommentRepository _postCommentRepository,
   IReactionRepository _reactionRepository
 ) : ICommentService
 {
+  private readonly IFileUploadService _uploadService = fileUploadService;
+
   public async Task<DateTimeOffsetCursorPagerResult<CommentDto>> GetCommentsForPostAsViewer(Guid postId, Guid? viewerProfileId, DateTimeOffset before, int limit)
   {
     var comments = await _postCommentRepository.GetDbSet()
@@ -24,15 +27,22 @@ public class CommentService(
       .Take(limit)
       .ToListAsync();
 
+    var avatarUrls = new Dictionary<Guid, string>();
+
     var commentDtos = new List<CommentDto>();
 
     foreach (var comment in comments)
     {
+      if (!avatarUrls.ContainsKey(comment.CreatedBy) && comment.Profile != null && comment.Profile.Avatar != null)
+      {
+        avatarUrls.Add(comment.CreatedBy, await _uploadService.GenerateFileUrl(comment.Profile.Avatar));
+      }
+
       var creator = new CommentCreatorDto
       {
         Id = comment.Profile?.ProfileId,
         Name = comment.Profile?.Name ?? "Unknown User",
-        AvatarUrl = ""
+        AvatarUrl = avatarUrls[comment.CreatedBy] ?? null
       };
 
       var statistic = await GetCommentStatistic(comment.Id);
@@ -46,12 +56,7 @@ public class CommentService(
         Id = comment.Id,
         Content = comment.Content,
         CreatedAt = comment.CreatedAt,
-        Creator = new CommentCreatorDto
-        {
-          Id = comment.Profile?.ProfileId,
-          Name = comment.Profile?.Name ?? "Unknown User",
-          AvatarUrl = ""
-        },
+        Creator = creator,
         Statistic = statistic,
         Reaction = viewerReaction
       };

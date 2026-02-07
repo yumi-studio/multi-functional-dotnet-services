@@ -13,9 +13,9 @@ public class PostService(
   IReactionRepository _reactionRepository
 ) : IPostService
 {
-  public async Task<IEnumerable<Post>> GetFeedAsync(DateTimeOffset? before, int limit)
+  public async Task<List<Post>> GetFeedAsync(DateTimeOffset? before, int limit)
   {
-    return await _postRepository.GetPostsAsync(null, before ?? DateTimeOffset.UtcNow, limit);
+    return [.. await _postRepository.GetPostsAsync(null, before ?? DateTimeOffset.UtcNow, limit)];
   }
 
   /// <summary>
@@ -26,13 +26,13 @@ public class PostService(
   /// <param name="limit"></param>
   /// <returns></returns>
   /// <exception cref="NotImplementedException"></exception>
-  public async Task<IEnumerable<Post>> GetFeedByProfileAsync(Guid profileId, DateTimeOffset? before, int limit)
+  public async Task<List<Post>> GetFeedByProfileAsync(Guid profileId, DateTimeOffset? before, int limit)
   {
     var postDbSet = _postRepository.GetDbSet();
     var createdBefore = before ?? DateTimeOffset.MaxValue;
     var createdAfter = DateTimeOffset.MinValue;
     var query = postDbSet.AsQueryable();
-    query = query.Where(p => p.CreatedBy == profileId);
+    // query = query.Where(p => p.CreatedBy == profileId);
     query = query.Where(p => p.CreatedAt >= createdAfter && p.CreatedAt <= createdBefore);
     query = query.OrderByDescending(p => p.CreatedAt).Take(limit);
 

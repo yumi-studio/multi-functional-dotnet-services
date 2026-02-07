@@ -96,7 +96,7 @@ public class FakebookProfileController(
 
     var stream = file.OpenReadStream();
     var newFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-    var uploadedAvatar = await _fileUploadService.UploadFile(UploadMethod.Local, stream, new UploadOptions
+    var uploadedAvatar = await _fileUploadService.UploadFile(stream, new UploadOptions
     {
       FileName = newFileName,
       Directory = $"{profile.ProfileId}/avatars",

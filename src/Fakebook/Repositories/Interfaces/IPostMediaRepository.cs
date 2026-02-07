@@ -6,5 +6,5 @@ namespace Fakebook.Repositories.Interfaces;
 
 public interface IPostMediaRepository : IRepository<PostMedia, Guid>
 {
-
+  public Task<List<PostMedia>> GetListByPostId(Guid PostId);
 }

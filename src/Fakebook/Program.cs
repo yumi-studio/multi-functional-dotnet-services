@@ -153,6 +153,11 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 Console.WriteLine($"Connect MySQL: {connectionStringBuilder.ConnectionString}");
 
+builder.Services.AddMediatR(cfg =>
+{
+  cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
+
 Console.WriteLine($"Register Upload Methods");
 builder.Services.AddScoped<IUploadMethod, LocalUploadMethod>();
 builder.Services.AddScoped<IUploadMethodResolver, UploadMethodResolver>();

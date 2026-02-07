@@ -53,7 +53,7 @@ public class FakebookUploadController(
 
     using var stream = file.OpenReadStream();
     var newFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-    var uploadedFile = await _fileUploadService.UploadFile(Enums.UploadMethod.Local, stream, new UploadOptions
+    var uploadedFile = await _fileUploadService.UploadFile(stream, new UploadOptions
     {
       FileName = newFileName,
       Directory = $"{profile.ProfileId}/uploads",

@@ -6,7 +6,7 @@ namespace Fakebook.Services.Interfaces;
 
 public interface IPostService
 {
-  public Task<IEnumerable<Post>> GetFeedAsync(DateTimeOffset? before, int limit);
-  public Task<IEnumerable<Post>> GetFeedByProfileAsync(Guid profileId, DateTimeOffset? before, int limit);
+  public Task<List<Post>> GetFeedAsync(DateTimeOffset? before, int limit);
+  public Task<List<Post>> GetFeedByProfileAsync(Guid profileId, DateTimeOffset? before, int limit);
   public Task<PostStatisticDto> GetPostStatistic(Guid id);
 }

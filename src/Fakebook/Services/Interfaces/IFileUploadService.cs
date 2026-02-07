@@ -1,5 +1,6 @@
 using System;
 using Fakebook.Enums;
+using Fakebook.Infrastructure.UploadMethods;
 
 namespace Fakebook.Services.Interfaces;
 
@@ -51,8 +52,7 @@ public class UploadedAudio : UploadedFile
 
 public interface IFileUploadService
 {
-  // public Task<UploadedFile> UploadFile(Stream fileStream, string fileName, UploadMethod method);
-  // public Task<UploadedFile> UploadFileToDirectory(Stream fileStream, string fileName, string directory, UploadMethod method);
-  public Task<UploadedFile> UploadFile(UploadMethod method, Stream fileStream, UploadOptions options);
+  public Task<UploadedFile> UploadFile(Stream fileStream, UploadOptions options);
+  public Task<bool> DeleteFile(string path);
   public Task<string> GenerateFileUrl(string path);
 }

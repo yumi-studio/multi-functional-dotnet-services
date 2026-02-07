@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Fakebook.Configurations;
 using Microsoft.Extensions.Options;
+using MediatR;
+using Fakebook.Events;
 
 namespace Fakebook.Controllers;
 
@@ -23,6 +25,7 @@ public class FakebookPostController(
   CookiesManager _cookieManager,
   IOptions<StorageConfiguration> storageConfiguration,
   AppDbContext _dbContext,
+  IMediator mediator,
   IPostService _postService,
   IProfileService _profileService,
   ICommentService _commentService,
@@ -34,6 +37,7 @@ public class FakebookPostController(
 ) : FakebookController(_cookieManager, _profileService)
 {
   private readonly StorageConfiguration _storageConfiguration = storageConfiguration.Value;
+  private readonly IMediator _mediator = mediator;
 
   #region post api
 
@@ -48,7 +52,6 @@ public class FakebookPostController(
   {
     var profile = await GetActiveProfile() ?? throw new Exception("No active profile");
     var posts = (await _postService.GetFeedByProfileAsync(profile.ProfileId, request.Before, request.Limit)).ToList();
-    var postIds = posts.Select(p => p.Id).ToList();
     var postDtos = await BuildManyPostDto(posts);
     return OkResponse(postDtos);
   }
@@ -152,7 +155,7 @@ public class FakebookPostController(
   /// <returns></returns>
   /// <exception cref="Exception"></exception>
   [HttpDelete("{id}", Name = "DeletePost")]
-  public async Task<IActionResult> DeletePost(Guid id)
+  public async Task<IActionResult> DeletePost(Guid id, CancellationToken ct)
   {
     var profile = await GetActiveProfile() ?? throw new Exception("No active profile");
     var post = await _postRepository.GetByIdAsync(id) ?? throw new Exception("Post is not exist");
@@ -160,8 +163,13 @@ public class FakebookPostController(
     {
       throw new Exception("Action not allowed");
     }
+
+    var mediaItems = await _postMediaRepository.GetListByPostId(id);
+
     _dbContext.Posts.Remove(post);
-    await _dbContext.SaveChangesAsync();
+    await _dbContext.SaveChangesAsync(ct);
+    await _mediator.Publish(new OnPostDeleted(post), ct);
+    await _mediator.Publish(new OnPostMediaDeleted(mediaItems), ct);
 
     return OkResponse(new { Id = id });
   }
@@ -279,7 +287,7 @@ public class FakebookPostController(
       Id = Guid.NewGuid(),
       PostId = id,
       Content = request.Content,
-      CreatedBy = (await GetActiveProfile())?.ProfileId ?? throw new Exception("No active profile")
+      CreatedBy = profile.ProfileId,
     };
     await _dbContext.PostComments.AddAsync(newComment);
     await _dbContext.SaveChangesAsync();
@@ -310,16 +318,13 @@ public class FakebookPostController(
       mediaItemUrls[path] = url;
     }
 
-    var avatarPaths = profiles
-      .Where(e => e.Avatar != null)
-      .Select(e => e.Avatar!)
-      .Distinct()
-      .ToList();
-    var avatarUrls = new Dictionary<string, string>();
-    foreach (var path in avatarPaths)
+    var avatarUrls = new Dictionary<Guid, string>();
+    foreach (var profile in profiles)
     {
-      var url = await _fileUploadService.GenerateFileUrl(path);
-      avatarUrls[path] = url;
+      if (!avatarUrls.ContainsKey(profile.ProfileId) && profile.Avatar != null)
+      {
+        avatarUrls.Add(profile.ProfileId, await _fileUploadService.GenerateFileUrl(profile.Avatar));
+      }
     }
 
     foreach (var post in posts)
@@ -359,7 +364,7 @@ public class FakebookPostController(
         {
           Id = post.CreatedBy,
           Name = creatorProfile?.Name ?? "Unknown user",
-          AvatarUrl = creatorProfile?.Avatar == null ? null : avatarUrls[creatorProfile.Avatar]
+          AvatarUrl = avatarUrls[post.CreatedBy] ?? null
         },
         MediaItems = [.. mediaItemDtos],
         Statistic = await _postService.GetPostStatistic(post.Id),

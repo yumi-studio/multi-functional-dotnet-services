@@ -22,9 +22,12 @@ public class FakebookCommentController(
   AppDbContext _dbContext,
   IProfileService _profileService,
   ICommentService _commentService,
+  IFileUploadService fileUploadService,
   IPostCommentRepository _postCommentRepository
 ) : FakebookController(_cookieManager, _profileService)
 {
+  private readonly IFileUploadService _uploadService = fileUploadService;
+
   [HttpGet("{id}", Name = "GetComment")]
   public async Task<IActionResult> GetComment(Guid id)
   {
@@ -126,7 +129,7 @@ public class FakebookCommentController(
       {
         Id = comment.Profile.ProfileId,
         Name = comment.Profile.Name,
-        AvatarUrl = null
+        AvatarUrl = comment.Profile?.Avatar == null ? null : await _uploadService.GenerateFileUrl(comment.Profile.Avatar)
       },
       Statistic = await _commentService.GetCommentStatistic(comment.Id)
     };
